@@ -14,8 +14,7 @@
     *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
     html,body{height:100%}
     body{background:var(--bg);font-family:'Jost',system-ui,sans-serif;color:var(--text);display:flex;align-items:center;justify-content:center;overflow:hidden}
-    .phone{aspect-ratio:9/16;height:min(100%,calc(100vw*16/9));max-width:100%;position:relative;overflow:hidden;display:flex;flex-direction:column;border-radius:clamp(0px,2vw,34px);
-    background:radial-gradient(70% 40% at 15% 0%,#6b3a5e 0%,transparent 70%),radial-gradient(60% 40% at 100% 35%,#3b3a7a 0%,transparent 70%),radial-gradient(70% 40% at 0% 80%,#7a4a3c 0%,transparent 70%),#171021;box-shadow:0 0 0 1px var(--line),0 30px 80px rgba(0,0,0,.5)}
+    .phone{aspect-ratio:9/16;height:min(100%,calc(100vw*16/9));max-width:100%;position:relative;overflow:hidden;display:flex;flex-direction:column;border-radius:clamp(0px,2vw,34px);background:radial-gradient(70% 40% at 15% 0%,#6b3a5e 0%,transparent 70%),radial-gradient(60% 40% at 100% 35%,#3b3a7a 0%,transparent 70%),radial-gradient(70% 40% at 0% 80%,#7a4a3c 0%,transparent 70%),#171021;box-shadow:0 0 0 1px var(--line),0 30px 80px rgba(0,0,0,.5)}
     .phone::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.14;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E")}
     header{padding:calc(14px + env(safe-area-inset-top,0px)) 20px 10px;display:flex;justify-content:space-between;align-items:center;z-index:2}
     .logo{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:600;letter-spacing:.02em;color:var(--gold)}
@@ -38,8 +37,8 @@
     .pic{height:260px;margin:0 10px;border-radius:16px;position:relative;overflow:hidden}
     .pic span{position:absolute;left:16px;bottom:12px;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:24px;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.4)}
     .stats{display:flex;justify-content:space-between;padding:10px 16px 0;font-size:12px;color:var(--mute)}
-    .acts{display:flex;border-top:1px solid var(--line);margin-top:10px}
-    .acts button{flex:1;background:none;border:0;color:var(--text);font:400 13px 'Jost',sans-serif;padding:13px 0;cursor:pointer}
+    .acts{display:flex;flex-wrap:wrap;border-top:1px solid var(--line);margin-top:10px}
+    .acts button{flex:1;min-width:90px;background:none;border:0;color:var(--text);font:400 13px 'Jost',sans-serif;padding:13px 0;cursor:pointer}
     .acts button.on{color:var(--rose)}
     .cm{padding:0 16px 12px;font-size:13px;color:var(--mute);line-height:1.6}.cm b{color:var(--gold);font-weight:500}
     .cin{display:flex;gap:8px;padding:0 14px 14px}
@@ -62,9 +61,12 @@
     .fld{width:100%;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:13px 16px;color:var(--text);font:300 15px 'Jost',sans-serif;outline:none;margin-bottom:12px}
     .err{color:var(--rose);font-size:13px;min-height:18px;margin:2px 0 8px}
     .big{width:100%;padding:13px;font-size:15px}
+    .auth-tabs{display:flex;gap:8px;margin:12px 0 18px}
+    .auth-tabs button{flex:1;padding:9px 10px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--text);cursor:pointer}
+    .auth-tabs button.active{background:linear-gradient(135deg,#f0cfa6,#d39a79);color:#2a1a24;border:none}
     .ov.sv{background:#000;padding:0}
     .media{position:absolute;inset:0;display:grid;place-items:center;color:#fff;text-align:center;padding:30px;font:italic 600 32px 'Cormorant Garamond',serif}
-    .media img,.media video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+    .media img,.media video{position:absolute;inset:0;width:100%;max-width:100%;height:100%;object-fit:cover}
     .bars,.rb{position:absolute;top:calc(10px + env(safe-area-inset-top,0px));left:12px;right:12px;height:3px;background:rgba(255,255,255,.3);border-radius:3px;z-index:2}
     .rb{top:12px}.bar{height:100%;width:0;background:#fff;border-radius:3px}
     .sv .top{position:absolute;top:calc(22px + env(safe-area-inset-top,0px));left:14px;right:14px;display:flex;justify-content:space-between;color:#fff;z-index:2}
@@ -79,12 +81,19 @@
   <div class="phone">
     <div class="ov" id="login">
       <div class="logo" style="font-size:46px;text-align:center">Lumière</div>
-      <p style="text-align:center;color:var(--mute);margin:6px 0 28px;font-weight:300">Masuk untuk melihat kabar terbaru.</p>
+      <p style="text-align:center;color:var(--mute);margin:6px 0 20px;font-weight:300">Masuk untuk melihat kabar terbaru.</p>
+
+      <div class="auth-tabs">
+        <button class="active" id="tab-login" onclick="toggleAuthMode('login')">Masuk</button>
+        <button id="tab-register" onclick="toggleAuthMode('register')">Daftar</button>
+      </div>
+
       <input class="fld" id="lu" placeholder="Nama pengguna" autocomplete="username">
-      <input class="fld" id="lp" type="password" placeholder="Kata sandi" autocomplete="current-password" onkeydown="if(event.key==='Enter')login()">
+      <input class="fld" id="lfull" placeholder="Nama lengkap" autocomplete="name" style="display:none">
+      <input class="fld" id="lp" type="password" placeholder="Kata sandi" autocomplete="current-password">
       <div class="err" id="lerr"></div>
-      <button class="btn big" onclick="login()">Masuk</button>
-      <p style="text-align:center;color:var(--mute);font-size:12px;margin-top:18px">Versi belajar: akun tidak dikirim ke server.</p>
+      <button class="btn big" id="authBtn" onclick="submitAuth()">Masuk</button>
+      <p style="text-align:center;color:var(--mute);font-size:12px;margin-top:18px">Mode demo aktif. Jika config Supabase diisi, login akan menggunakan akun Supabase.</p>
     </div>
 
     <div class="ov sv" id="sv" hidden>
@@ -131,16 +140,6 @@
           <button class="btn" style="background:var(--panel);color:var(--text);border:1px solid var(--line)" onclick="logout()">Keluar</button>
           <div class="err" id="saved"></div>
         </div>
-        <details class="card" style="padding:14px 16px;font-size:13px;line-height:1.6;color:var(--mute)">
-          <summary style="color:var(--gold);cursor:pointer">Panduan belajar developer pemula</summary>
-          <ol style="padding-left:18px;margin-top:8px">
-            <li>Buka bagian CONFIG di kode, ubah durasi story dan reels.</li>
-            <li>HTML = kerangka halaman, CSS = tampilan, JS = logika.</li>
-            <li>Data (posts, stories, reels) adalah array; render() menggambar ulang layar.</li>
-            <li>Langkah berikut: simpan data ke database (Firebase/Supabase) dan login sungguhan.</li>
-            <li>Untuk Play Store/App Store, bungkus dengan Capacitor atau pelajari Flutter/React Native.</li>
-          </ol>
-        </details>
         <div id="mine"></div>
       </section>
       <section class="view" id="v5"><h2>Reels</h2><div class="reel" id="reel"></div></section>
@@ -157,123 +156,445 @@
   </div>
 
   <script>
-    /* ===== CONFIG: developer boleh ubah angka di sini ===== */
-    const CFG={STORY_SEC:5,STORY_MAX_VIDEO_SEC:15,REEL_SEC:6};
-    let ME={user:'',name:'Anda',bio:'Pencinta senja, kopi hitam, dan buku-buku tua.',city:'Jakarta'};
-    const G=['linear-gradient(135deg,#f0cfa6,#d98b9b)','linear-gradient(135deg,#a9b7f0,#d98bd0)','linear-gradient(135deg,#f0a98b,#e0b48a)','linear-gradient(135deg,#9fd6c4,#7a9be0)'];
-    const pics=['linear-gradient(160deg,#2b1b4d 0%,#a8507a 55%,#f2b980 100%)','linear-gradient(160deg,#10243e 0%,#4a6fa5 50%,#e8c9a0 100%)','linear-gradient(160deg,#3a1c2e 0%,#c46a6a 55%,#f5d5a8 100%)'];
-    const people=[['Raina','R',0],['Dimas','D',1],['Salsa','S',2],['Arka','A',3],['Mira','M',0]];
-    let posts=[
-      {n:'Raina',i:'R',g:0,t:'2 jam lalu',x:'Senja di Labuan Bajo selalu terasa seperti lukisan yang belum kering.',p:0,c:'Golden hour',l:128,liked:0,cm:[['Dimas','Indah sekali!']]},
-      {n:'Dimas',i:'D',g:1,t:'5 jam lalu',x:'Pagi yang tenang, secangkir kopi, dan satu bab buku baru.',p:1,c:'Pagi hening',l:86,liked:0,cm:[]},
-      {n:'Salsa',i:'S',g:2,t:'Kemarin',x:'Pameran seni kemarin membuat saya ingin kembali melukis.',p:2,c:'Atelier',l:211,liked:0,cm:[['Mira','Ayo lukis bareng!'],['Arka','Keren.']]}
+    const CFG = { STORY_SEC: 5, STORY_MAX_VIDEO_SEC: 15, REEL_SEC: 6 };
+    const STORE_KEY = 'lumiere-demo-v2';
+    const DEFAULT_POSTS = [
+      { id: 'p1', user: 'raina', name: 'Raina', initials: 'R', theme: 0, createdAt: '2 jam lalu', text: 'Senja di Labuan Bajo selalu terasa seperti lukisan yang belum kering.', image: 0, caption: 'Golden hour', likes: 128, liked: false, comments: [{ name: 'Dimas', text: 'Indah sekali!' }] },
+      { id: 'p2', user: 'dimas', name: 'Dimas', initials: 'D', theme: 1, createdAt: '5 jam lalu', text: 'Pagi yang tenang, secangkir kopi, dan satu bab buku baru.', image: 1, caption: 'Pagi hening', likes: 86, liked: false, comments: [] },
+      { id: 'p3', user: 'salsa', name: 'Salsa', initials: 'S', theme: 2, createdAt: 'Kemarin', text: 'Pameran seni kemarin membuat saya ingin kembali melukis.', image: 2, caption: 'Atelier', likes: 211, liked: false, comments: [{ name: 'Mira', text: 'Ayo lukis bareng!' }, { name: 'Arka', text: 'Keren.' }] }
     ];
-    const $=s=>document.querySelector(s),esc=s=>s.replace(/[&<>\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-    function card(p,k){return `<div class="card ${p.fresh?'new':''}"><div class="ph"><div class="av" style="background:${G[p.g]}">${p.me?esc(ME.name[0]):p.i}</div><div><b>${esc(p.me?ME.name:p.n)}</b><small>${p.t}</small></div></div><div class="txt">${esc(p.x)}</div>${p.p!=null?`<div class="pic" style="background:${pics[p.p]}"><span>${p.c}</span></div>`:''}<div class="stats"><span>♥ ${p.l}</span><span>${p.cm.length} komentar</span></div><div class="acts"><button class="${p.liked?'on':''}" onclick="like(${k})">${p.liked?'♥ Disukai':'♡ Suka'}</button><button onclick="document.getElementById('c${k}').focus()">Komentar</button><button onclick="this.textContent='Tersalin';setTimeout(()=>this.textContent='Bagikan',1400)">Bagikan</button></div><div class="cm" style="padding-top:10px">${p.cm.map(c=>`<div><b>${esc(c[0])}</b> ${esc(c[1])}</div>`).join('')}</div><div class="cin"><input id="c${k}" placeholder="Tulis komentar…" onkeydown="if(event.key==='Enter')cmt(${k},this)"></div></div>`}
-    function render(){
-      $('#feed').innerHTML=posts.length?posts.map(card).join(''):'<div class="empty">Belum ada kiriman. Tulis yang pertama.</div>';
-      posts.forEach(p=>p.fresh=0);
-      $('#mine').innerHTML=posts.map((p,k)=>p.me?card(p,k):'').join('')||'<div class="empty">Kiriman Anda akan muncul di sini.</div>';
+    const DEFAULT_STORIES = [
+      { id: 's1', user: 'raina', name: 'Raina', initials: 'R', theme: 0, text: 'Senja hari ini' },
+      { id: 's2', user: 'dimas', name: 'Dimas', initials: 'D', theme: 1, text: 'Kopi pagi' },
+      { id: 's3', user: 'salsa', name: 'Salsa', initials: 'S', theme: 2, text: 'Pameran seni' }
+    ];
+    const G = ['linear-gradient(135deg,#f0cfa6,#d98b9b)','linear-gradient(135deg,#a9b7f0,#d98bd0)','linear-gradient(135deg,#f0a98b,#e0b48a)','linear-gradient(135deg,#9fd6c4,#7a9be0)'];
+    const pics = ['linear-gradient(160deg,#2b1b4d 0%,#a8507a 55%,#f2b980 100%)','linear-gradient(160deg,#10243e 0%,#4a6fa5 50%,#e8c9a0 100%)','linear-gradient(160deg,#3a1c2e 0%,#c46a6a 55%,#f5d5a8 100%)'];
+    const people = [['Raina','R',0],['Dimas','D',1],['Salsa','S',2],['Arka','A',3],['Mira','M',0]];
+
+    const APP = {
+      authMode: 'login',
+      currentUser: { username: '', name: 'Anda', bio: 'Pencinta senja, kopi hitam, dan buku-buku tua.', city: 'Jakarta' },
+      posts: [],
+      stories: [],
+      blocks: [],
+      reports: []
+    };
+
+    const $ = (s) => document.querySelector(s);
+    const esc = (s = '') => String(s).replace(/[&<>\"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c] || c));
+
+    function hydrateDemoState() {
+      const raw = localStorage.getItem(STORE_KEY);
+      if (raw) {
+        try {
+          const parsed = JSON.parse(raw);
+          APP.posts = Array.isArray(parsed.posts) && parsed.posts.length ? parsed.posts : DEFAULT_POSTS;
+          APP.stories = Array.isArray(parsed.stories) && parsed.stories.length ? parsed.stories : DEFAULT_STORIES;
+          APP.blocks = Array.isArray(parsed.blocks) ? parsed.blocks : [];
+          APP.reports = Array.isArray(parsed.reports) ? parsed.reports : [];
+          if (parsed.currentUser) APP.currentUser = { ...APP.currentUser, ...parsed.currentUser };
+          return;
+        } catch (e) { console.warn('State invalid; resetting demo state.', e); }
+      }
+      APP.posts = DEFAULT_POSTS.map((p, idx) => ({ ...p, id: p.id || `p${idx + 1}` }));
+      APP.stories = DEFAULT_STORIES.map((s, idx) => ({ ...s, id: s.id || `s${idx + 1}` }));
+      APP.blocks = [];
+      APP.reports = [];
+      persistDemoState();
     }
-    function like(k){const p=posts[k];p.liked=!p.liked;p.l+=p.liked?1:-1;render()}
-    function cmt(k,el){const v=el.value.trim();if(!v)return;posts[k].cm.push([ME.name,v]);render()}
-    function post(){const v=$('#np').value.trim();if(!v){$('#np').focus();return}posts.unshift({me:1,n:'Anda',i:'A',g:0,t:'Baru saja',x:v,p:Math.random()<.6?Math.floor(Math.random()*3):null,c:'Momen baru',l:0,liked:0,cm:[],fresh:1});$('#np').value='';render()}
-    const row=(p,a,b,btn)=>`<div class="row"><div class="av" style="background:${G[p[2]]}">${p[1]}</div><div><b>${a}</b><small>${b}</small></div>${btn?`<button class="btn" onclick="this.textContent='Terkirim'">${btn}</button>`:''}</div>`;
-    $('#friends').innerHTML=people.map(p=>row(p,p[0],(3+p[2]*4)+' teman bersama','Tambah')).join('');
-    $('#notifs').innerHTML=people.slice(0,4).map((p,k)=>row(p,p[0],['menyukai kiriman Anda','mengomentari foto Anda','mengirim permintaan pertemanan','menyebut Anda'][k])).join('');
-    $('#msgs').innerHTML=people.map((p,k)=>row(p,p[0],['Sampai ketemu besok ya','Fotonya cantik sekali','Terima kasih banyak','Jadi kita berangkat?','Kabari saya ya'][k])).join('');
-    render();
 
-    /* ===== Tema terang/gelap ===== */
-    function setTheme(t){document.documentElement.dataset.theme=t}
-    function toggleTheme(){setTheme(document.documentElement.dataset.theme==='light'?'dark':'light')}
-    setTheme(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark');
-
-    /* ===== Login (demo, tanpa server) ===== */
-    function login(){const u=$('#lu').value.trim(),p=$('#lp').value,e=$('#lerr');
-      if(u.length<3){e.textContent='Nama pengguna minimal 3 karakter.';return}
-      if(p.length<4){e.textContent='Kata sandi minimal 4 karakter.';return}
-      ME.user=u;if(ME.name==='Anda')ME.name=u[0].toUpperCase()+u.slice(1);
-      e.textContent='';$('#lp').value='';$('#login').hidden=true;syncMe();render();go(0)
+    function persistDemoState() {
+      localStorage.setItem(STORE_KEY, JSON.stringify({
+        currentUser: APP.currentUser,
+        posts: APP.posts,
+        stories: APP.stories,
+        blocks: APP.blocks,
+        reports: APP.reports
+      }));
     }
-    function logout(){$('#login').hidden=false}
 
-    /* ===== Profil yang bisa diedit ===== */
-    function syncMe(){$('#pav').textContent=$('.compose .av').textContent=ME.name[0].toUpperCase();$('#pn').textContent=ME.name;$('#pu').textContent='@'+(ME.user||'anda')+' · '+ME.city;
-      $('#ename').value=ME.name;$('#ebio').value=ME.bio;$('#ecity').value=ME.city;renderStories()}
-    function saveProfile(){ME.name=$('#ename').value.trim()||ME.name;ME.bio=$('#ebio').value.trim();ME.city=$('#ecity').value.trim()||ME.city;syncMe();render();$('#saved').textContent='Profil tersimpan.'}
-
-    /* ===== Timer bar bersama (story & reels) ===== */
-    let TM;const sb=document.getElementById('sb');
-    function runBar(el,sec,done){clearInterval(TM);let t=0;el.style.width='0';TM=setInterval(()=>{t+=.1;el.style.width=Math.min(100,t/sec*100)+'%';if(t>=sec){clearInterval(TM);done()}},100)}
-
-    /* ===== Story: foto, video, atau teks ===== */
-    let stories=[{n:'Raina',g:0,txt:'Senja hari ini'},{n:'Dimas',g:1,txt:'Kopi pagi'},{n:'Salsa',g:2,txt:'Pameran seni'}];
-    function renderStories(){$('#stories').innerHTML=`<div class="st" onclick="document.getElementById('sf').click()"><div class="ring"><div class="av" style="background:var(--panel);color:var(--gold);font-size:28px">+</div></div>Buat cerita</div>`+stories.map((x,k)=>`<div class="st" onclick="openStory(${k})"><div class="ring ${x.seen?'seen':''}"><div class="av" style="background:${G[x.g||0]}">${esc(x.n[0])}</div></div>${esc(x.n)}</div>`).join('')}
-    function addStory(inp){const f=inp.files[0];if(!f)return;stories.unshift({n:ME.name,g:0,url:URL.createObjectURL(f),vid:f.type.startsWith('video')});inp.value='';openStory(0)}
-    function openStory(k){const x=stories[k],m=document.getElementById('sm');x.seen=1;renderStories();document.getElementById('sv').hidden=false;document.getElementById('sn').textContent=x.n;
-      const next=()=>k+1<stories.length?openStory(k+1):closeStory();
-      if(x.url&&x.vid){m.style.background='#000';m.innerHTML=`<video src="${x.url}" autoplay muted playsinline></video>`;m.firstChild.onloadedmetadata=e=>runBar(sb,Math.min(e.target.duration||CFG.STORY_SEC,CFG.STORY_MAX_VIDEO_SEC),next)}
-      else{m.style.background=x.url?'#000':pics[(x.g||0)%3];m.innerHTML=x.url?`<img src="${x.url}" alt="Story">`:`<span>${esc(x.txt)}</span>`;runBar(sb,CFG.STORY_SEC,next)}
+    function card(p, k) {
+      const isMine = p.user === APP.currentUser.username;
+      return `
+        <div class="card ${p.fresh ? 'new' : ''}">
+          <div class="ph">
+            <div class="av" style="background:${G[p.theme ?? 0]}">${esc(p.initials || p.name?.slice(0,1) || 'A')}</div>
+            <div><b>${esc(p.name || p.user)}</b><small>${p.createdAt}</small></div>
+          </div>
+          <div class="txt">${esc(p.text)}</div>
+          ${p.image != null ? `<div class="pic" style="background:${pics[p.image % pics.length]}"><span>${esc(p.caption || '')}</span></div>` : ''}
+          <div class="stats"><span>♥ ${p.likes ?? 0}</span><span>${(p.comments || []).length} komentar</span></div>
+          <div class="acts">
+            <button class="${p.liked ? 'on' : ''}" onclick="likePost('${p.id}')">${p.liked ? '♥ Disukai' : '♡ Suka'}</button>
+            <button onclick="document.getElementById('c${k}').focus()">Komentar</button>
+            <button onclick="reportPost('${p.id}')">Laporkan</button>
+            <button onclick="blockUser('${esc(p.user)}')">Blokir</button>
+            ${isMine ? `<button onclick="deletePost('${p.id}')">Hapus</button>` : ''}
+          </div>
+          <div class="cm" style="padding-top:10px">
+            ${(p.comments || []).map(c => `<div><b>${esc(c.name)}</b> ${esc(c.text)}</div>`).join('')}
+          </div>
+          <div class="cin"><input id="c${k}" placeholder="Tulis komentar…" onkeydown="if(event.key==='Enter')cmt('${p.id}',this)"></div>
+        </div>
+      `;
     }
-    function closeStory(){clearInterval(TM);document.getElementById('sv').hidden=true}
 
-    /* ===== Reels: video pendek, durasi dari CFG.REEL_SEC ===== */
-    const reels=[{u:'Raina',t:'Ombak dan senja di Pulau Padar',l:1240},{u:'Dimas',t:'Latte art dalam 15 detik',l:870},{u:'Salsa',t:'Melukis langit dengan cat air',l:2310},{u:'Arka',t:'Rute sepeda pagi di Kota Tua',l:540}];let ri=0;
-    const side=()=>{const r=reels[ri];return `<button class="hbtn" aria-label="Suka" onclick="likeReel()">${r.liked?'♥':'♡'}</button><span>${r.l}</span><button class="hbtn" aria-label="Berikutnya" onclick="nextReel()">⏭</button>`};
-    function showReel(){const r=reels[ri];$('#reel').innerHTML=`<div class="media" style="background:${pics[ri%3]}"><span>${esc(r.t)}</span></div><div class="rb"><div class="bar" id="rbar"></div></div><div class="info"><b>@${esc(r.u)}</b><small>${ri+1}/${reels.length} · ${CFG.REEL_SEC} dtk</small></div><div class="side" id="rs">${side()}</div>`;runBar(document.getElementById('rbar'),CFG.REEL_SEC,nextReel)}
-    function nextReel(){ri=(ri+1)%reels.length;showReel()}
-    function likeReel(){const r=reels[ri];r.liked=!r.liked;r.l+=r.liked?1:-1;document.getElementById('rs').innerHTML=side()}
+    function row(p, a, b, btn) {
+      return `<div class="row"><div class="av" style="background:${G[p[2]]}">${p[1]}</div><div><b>${a}</b><small>${b}</small></div>${btn ? `<button class="btn" onclick="this.textContent='Terkirim'">${btn}</button>` : ''}</div>`;
+    }
 
-    /* ===== Navigasi ===== */
-    document.querySelectorAll('nav button').forEach(b=>b.dataset.v=b.getAttribute('onclick').match(/\d/)[0]);
-    function go(n){document.querySelectorAll('.view').forEach(v=>v.classList.toggle('on',v.id==='v'+n));document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.v==n));document.querySelector('.scroll').scrollTop=0;if(n===5)showReel();else clearInterval(TM)}
+    function renderFeed() {
+      const visible = APP.posts.filter(p => !APP.blocks.includes(p.user));
+      $('#feed').innerHTML = visible.length ? visible.map(card).join('') : '<div class="empty">Belum ada kiriman yang cocok untukmu.</div>';
+      const mine = APP.posts.filter(p => p.user === APP.currentUser.username);
+      $('#mine').innerHTML = mine.length ? mine.map(card).join('') : '<div class="empty">Kiriman Anda akan muncul di sini.</div>';
+    }
+
+    function renderStories() {
+      const visibleStories = APP.stories.filter(story => !APP.blocks.includes(story.user));
+      $('#stories').innerHTML = `<div class="st" onclick="document.getElementById('sf').click()"><div class="ring"><div class="av" style="background:var(--panel);color:var(--gold);font-size:28px">+</div></div>Buat cerita</div>` + visibleStories.map((x, k) => `<div class="st" onclick="openStory(${k})"><div class="ring ${x.seen ? 'seen' : ''}"><div class="av" style="background:${G[x.theme || 0]}">${esc(x.initials || x.name?.slice(0,1) || 'A')}</div></div>${esc(x.name || x.user)}</div>`).join('');
+    }
+
+    function renderFriends() {
+      $('#friends').innerHTML = people.map(p => row(p, p[0], (3 + p[2] * 4) + ' teman bersama', 'Tambah')).join('');
+      $('#notifs').innerHTML = people.slice(0, 4).map((p, k) => row(p, p[0], ['menyukai kiriman Anda', 'mengomentari foto Anda', 'mengirim permintaan pertemanan', 'menyebut Anda'][k])).join('');
+      $('#msgs').innerHTML = people.map((p, k) => row(p, p[0], ['Sampai ketemu besok ya', 'Fotonya cantik sekali', 'Terima kasih banyak', 'Jadi kita berangkat?', 'Kabari saya ya'][k])).join('');
+    }
+
+    function persistAndRender() {
+      persistDemoState();
+      renderFeed();
+      renderStories();
+      syncMe();
+    }
+
+    function likePost(id) {
+      const target = APP.posts.find(p => p.id === id);
+      if (!target) return;
+      target.liked = !target.liked;
+      target.likes = Math.max(0, (target.likes || 0) + (target.liked ? 1 : -1));
+      persistAndRender();
+    }
+
+    function cmt(id, el) {
+      const value = el.value.trim();
+      if (!value) return;
+      const target = APP.posts.find(p => p.id === id);
+      if (!target) return;
+      target.comments = target.comments || [];
+      target.comments.push({ name: APP.currentUser.name || APP.currentUser.username, text: value });
+      el.value = '';
+      persistAndRender();
+    }
+
+    function deletePost(id) {
+      APP.posts = APP.posts.filter(p => p.id !== id);
+      persistAndRender();
+    }
+
+    function reportPost(id) {
+      const target = APP.posts.find(p => p.id === id);
+      if (!target) return;
+      const key = `${id}:${APP.currentUser.username}`;
+      if (!APP.reports.includes(key)) APP.reports.push(key);
+      target.reported = true;
+      alert('Postingan telah dilaporkan untuk ditinjau moderator.');
+      persistAndRender();
+    }
+
+    function blockUser(username) {
+      if (!username || !username.trim()) return;
+      if (!APP.blocks.includes(username)) APP.blocks.push(username);
+      alert(`@${username} diblokir. Anda tidak akan melihat kontennya lagi.`);
+      persistAndRender();
+    }
+
+    function post() {
+      const v = $('#np').value.trim();
+      if (!v) { $('#np').focus(); return; }
+      APP.posts.unshift({
+        id: `p-${Date.now()}`,
+        user: APP.currentUser.username || 'anda',
+        name: APP.currentUser.name || 'Anda',
+        initials: (APP.currentUser.name || 'Anda').slice(0, 1).toUpperCase(),
+        theme: 0,
+        createdAt: 'Baru saja',
+        text: v,
+        image: Math.random() < 0.6 ? Math.floor(Math.random() * 3) : null,
+        caption: 'Momen baru',
+        likes: 0,
+        liked: false,
+        comments: [],
+        fresh: true
+      });
+      $('#np').value = '';
+      persistAndRender();
+    }
+
+    function setTheme(t) { document.documentElement.dataset.theme = t; }
+    function toggleTheme() { setTheme(document.documentElement.dataset.theme === 'light' ? 'dark' : 'light'); }
+    setTheme(matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+
+    function toggleAuthMode(mode) {
+      APP.authMode = mode;
+      const isRegister = mode === 'register';
+      $('#tab-login').classList.toggle('active', !isRegister);
+      $('#tab-register').classList.toggle('active', isRegister);
+      $('#lfull').style.display = isRegister ? 'block' : 'none';
+      $('#authBtn').textContent = isRegister ? 'Daftar' : 'Masuk';
+      $('#login p').textContent = isRegister ? 'Buat akun baru untuk mulai berbagi.' : 'Masuk untuk melihat kabar terbaru.';
+      $('#lerr').textContent = '';
+    }
+
+    function syncMe() {
+      $('#pav').textContent = $('.compose .av').textContent = (APP.currentUser.name || 'A').slice(0, 1).toUpperCase();
+      $('#pn').textContent = APP.currentUser.name || 'Anda';
+      $('#pu').textContent = '@' + (APP.currentUser.username || 'anda') + ' · ' + (APP.currentUser.city || 'Jakarta');
+      $('#ename').value = APP.currentUser.name || 'Anda';
+      $('#ebio').value = APP.currentUser.bio || '';
+      $('#ecity').value = APP.currentUser.city || 'Jakarta';
+    }
+
+    function saveProfile() {
+      APP.currentUser.name = $('#ename').value.trim() || APP.currentUser.name || 'Anda';
+      APP.currentUser.bio = $('#ebio').value.trim();
+      APP.currentUser.city = $('#ecity').value.trim() || APP.currentUser.city || 'Jakarta';
+      persistDemoState();
+      syncMe();
+      renderFeed();
+      $('#saved').textContent = 'Profil tersimpan.';
+    }
+
+    function submitAuth() {
+      const u = $('#lu').value.trim().toLowerCase();
+      const password = $('#lp').value.trim();
+      const full = $('#lfull').value.trim();
+      const e = $('#lerr');
+
+      if (!u || u.length < 3) { e.textContent = 'Nama pengguna minimal 3 karakter.'; return; }
+      if (password.length < 4) { e.textContent = 'Kata sandi minimal 4 karakter.'; return; }
+      if (APP.authMode === 'register' && !full) { e.textContent = 'Nama lengkap wajib diisi.'; return; }
+
+      APP.currentUser.username = u;
+      APP.currentUser.name = APP.authMode === 'register' ? full : (APP.currentUser.name === 'Anda' ? u[0].toUpperCase() + u.slice(1) : APP.currentUser.name);
+      APP.currentUser.bio = APP.currentUser.bio || 'Pencinta senja, kopi hitam, dan buku-buku tua.';
+      APP.currentUser.city = APP.currentUser.city || 'Jakarta';
+
+      if (APP.authMode === 'register') {
+        const exists = APP.posts.some(p => p.user === u) || APP.stories.some(s => s.user === u);
+        if (!exists) {
+          APP.posts.unshift({
+            id: `welcome-${Date.now()}`,
+            user: u,
+            name: full,
+            initials: full.slice(0, 1).toUpperCase(),
+            theme: 0,
+            createdAt: 'Baru saja',
+            text: 'Selamat datang di Lumière! Saya baru saja bergabung.',
+            image: 0,
+            caption: 'Halo dunia',
+            likes: 0,
+            liked: false,
+            comments: [],
+            fresh: true
+          });
+        }
+      }
+
+      persistDemoState();
+      e.textContent = '';
+      $('#lp').value = '';
+      $('#lfull').value = '';
+      $('#login').hidden = true;
+      renderFeed();
+      renderStories();
+      go(0);
+    }
+
+    function login() {
+      submitAuth();
+    }
+
+    function logout() {
+      APP.currentUser = { username: '', name: 'Anda', bio: 'Pencinta senja, kopi hitam, dan buku-buku tua.', city: 'Jakarta' };
+      persistDemoState();
+      $('#login').hidden = false;
+      toggleAuthMode('login');
+      $('#lu').value = '';
+      $('#lp').value = '';
+      $('#lfull').value = '';
+      syncMe();
+      renderFeed();
+      renderStories();
+    }
+
+    function runBar(el, sec, done) {
+      clearInterval(TM);
+      let t = 0;
+      el.style.width = '0';
+      TM = setInterval(() => {
+        t += 0.1;
+        el.style.width = Math.min(100, (t / sec) * 100) + '%';
+        if (t >= sec) {
+          clearInterval(TM);
+          done();
+        }
+      }, 100);
+    }
+
+    let TM; const sb = document.getElementById('sb');
+
+    function openStory(k) {
+      const storiesList = APP.stories.filter(s => !APP.blocks.includes(s.user));
+      const x = storiesList[k];
+      if (!x) return;
+      x.seen = 1;
+      renderStories();
+      document.getElementById('sv').hidden = false;
+      document.getElementById('sn').textContent = x.name || x.user;
+      const next = () => k + 1 < storiesList.length ? openStory(k + 1) : closeStory();
+      const m = document.getElementById('sm');
+      if (x.url && x.vid) {
+        m.style.background = '#000';
+        m.innerHTML = `<video src="${x.url}" autoplay muted playsinline></video>`;
+        m.firstChild.onloadedmetadata = e => runBar(sb, Math.min(e.target.duration || CFG.STORY_SEC, CFG.STORY_MAX_VIDEO_SEC), next);
+      } else {
+        m.style.background = x.url ? '#000' : pics[(x.theme || 0) % 3];
+        m.innerHTML = x.url ? `<img src="${x.url}" alt="Story">` : `<span>${esc(x.text)}</span>`;
+        runBar(sb, CFG.STORY_SEC, next);
+      }
+    }
+
+    function closeStory() {
+      clearInterval(TM);
+      document.getElementById('sv').hidden = true;
+    }
+
+    function addStory(inp) {
+      const file = inp.files[0];
+      if (!file) return;
+      const item = {
+        id: `story-${Date.now()}`,
+        user: APP.currentUser.username || 'anda',
+        name: APP.currentUser.name || 'Anda',
+        initials: (APP.currentUser.name || 'Anda').slice(0, 1).toUpperCase(),
+        theme: 0,
+        text: 'Cerita baru',
+        url: URL.createObjectURL(file),
+        vid: file.type.startsWith('video'),
+        seen: false
+      };
+      APP.stories.unshift(item);
+      inp.value = '';
+      persistDemoState();
+      renderStories();
+      openStory(0);
+    }
+
+    const reels = [{ user: 'Raina', title: 'Ombak dan senja di Pulau Padar', likes: 1240 }, { user: 'Dimas', title: 'Latte art dalam 15 detik', likes: 870 }, { user: 'Salsa', title: 'Melukis langit dengan cat air', likes: 2310 }, { user: 'Arka', title: 'Rute sepeda pagi di Kota Tua', likes: 540 }];
+    let ri = 0;
+
+    const side = () => {
+      const r = reels[ri];
+      return `<button class="hbtn" aria-label="Suka" onclick="likeReel()">${r.liked ? '♥' : '♡'}</button><span>${r.likes}</span><button class="hbtn" aria-label="Berikutnya" onclick="nextReel()">⏭</button>`;
+    };
+
+    function showReel() {
+      const r = reels[ri];
+      $('#reel').innerHTML = `<div class="media" style="background:${pics[ri % 3]}"><span>${esc(r.title)}</span></div><div class="rb"><div class="bar" id="rbar"></div></div><div class="info"><b>@${esc(r.user)}</b><small>${ri + 1}/${reels.length} · ${CFG.REEL_SEC} dtk</small></div><div class="side" id="rs">${side()}</div>`;
+      runBar(document.getElementById('rbar'), CFG.REEL_SEC, nextReel);
+    }
+
+    function nextReel() {
+      ri = (ri + 1) % reels.length;
+      showReel();
+    }
+
+    function likeReel() {
+      const r = reels[ri];
+      r.liked = !r.liked;
+      r.likes += r.liked ? 1 : -1;
+      document.getElementById('rs').innerHTML = side();
+    }
+
+    document.querySelectorAll('nav button').forEach(b => b.dataset.v = b.getAttribute('onclick').match(/\d/)[0]);
+    function go(n) {
+      document.querySelectorAll('.view').forEach(v => v.classList.toggle('on', v.id === 'v' + n));
+      document.querySelectorAll('nav button').forEach(b => b.classList.toggle('on', b.dataset.v == n));
+      document.querySelector('.scroll').scrollTop = 0;
+      if (n === 5) showReel(); else clearInterval(TM);
+    }
+
+    const L = window.LUMIERE || {};
+    const SB = (L.SUPABASE_URL && window.supabase) ? supabase.createClient(L.SUPABASE_URL, L.SUPABASE_ANON_KEY) : null;
+    let UID = null;
+
+    async function loginSupabase() {
+      if (!SB) return false;
+      const u = $('#lu').value.trim().toLowerCase();
+      const password = $('#lp').value.trim();
+      const e = $('#lerr');
+      if (!/^[a-z0-9_]{3,20}$/.test(u)) { e.textContent = 'Nama pengguna 3-20 huruf kecil, angka, atau _.'; return false; }
+      if (password.length < 6) { e.textContent = 'Kata sandi minimal 6 karakter.'; return false; }
+      const email = `${u}@lumiere.app`;
+      let res = await SB.auth.signInWithPassword({ email, password });
+      if (res.error) {
+        res = await SB.auth.signUp({ email, password });
+        if (res.error || !res.data.session) { e.textContent = 'Akun belum tersedia atau sandi tidak valid.'; return false; }
+      }
+      UID = res.data.user.id;
+      const { data: profile } = await SB.from('profiles').select('*').eq('id', UID).maybeSingle();
+      APP.currentUser.username = u;
+      APP.currentUser.name = profile?.name || u[0].toUpperCase() + u.slice(1);
+      APP.currentUser.bio = profile?.bio || APP.currentUser.bio;
+      APP.currentUser.city = profile?.city || APP.currentUser.city;
+      if (!profile) {
+        await SB.from('profiles').upsert({ id: UID, username: u, name: APP.currentUser.name, bio: APP.currentUser.bio, city: APP.currentUser.city });
+      }
+      persistDemoState();
+      return true;
+    }
+
+    async function registerSupabase() {
+      if (!SB) return false;
+      const u = $('#lu').value.trim().toLowerCase();
+      const password = $('#lp').value.trim();
+      const full = $('#lfull').value.trim();
+      const e = $('#lerr');
+      if (!/^[a-z0-9_]{3,20}$/.test(u)) { e.textContent = 'Nama pengguna 3-20 huruf kecil, angka, atau _.'; return false; }
+      if (password.length < 6) { e.textContent = 'Kata sandi minimal 6 karakter.'; return false; }
+      if (!full) { e.textContent = 'Nama lengkap wajib diisi.'; return false; }
+      const email = `${u}@lumiere.app`;
+      const res = await SB.auth.signUp({ email, password });
+      if (res.error || !res.data.user) { e.textContent = 'Pendaftaran gagal. Coba lagi.'; return false; }
+      UID = res.data.user.id;
+      APP.currentUser = { username: u, name: full, bio: 'Pencinta senja, kopi hitam, dan buku-buku tua.', city: 'Jakarta' };
+      await SB.from('profiles').upsert({ id: UID, username: u, name: full, bio: APP.currentUser.bio, city: APP.currentUser.city });
+      persistDemoState();
+      return true;
+    }
+
+    async function handleAuthSubmit() {
+      if (SB && APP.authMode === 'login') {
+        const ok = await loginSupabase();
+        if (ok) { $('#login').hidden = true; go(0); return; }
+      }
+      if (SB && APP.authMode === 'register') {
+        const ok = await registerSupabase();
+        if (ok) { $('#login').hidden = true; go(0); return; }
+      }
+      submitAuth();
+    }
+
+    window.submitAuth = handleAuthSubmit;
+
+    hydrateDemoState();
+    renderFeed();
+    renderStories();
+    renderFriends();
+    toggleAuthMode('login');
     syncMe();
-
-    /* ===== SUPABASE: aktif jika config.js terisi; kosong = mode demo (data lokal) ===== */
-    const L=window.LUMIERE||{};
-    const SB=(L.SUPABASE_URL&&window.supabase)?supabase.createClient(L.SUPABASE_URL,L.SUPABASE_ANON_KEY):null;
-    let UID=null;
-    if(SB)document.querySelector('#login p:last-child').textContent='Akun baru dibuat otomatis saat pertama kali masuk.';
-    const _login=login,_logout=logout,_like=like,_cmt=cmt,_post=post,_save=saveProfile,_add=addStory;
-
-    /* Supabase Auth butuh email, jadi username diubah jadi username@lumiere.app (matikan "Confirm email") */
-    login=async function(){
-      if(!SB)return _login();
-      const u=$('#lu').value.trim().toLowerCase(),p=$('#lp').value,e=$('#lerr');
-      if(!/^[a-z0-9_]{3,20}$/.test(u)){e.textContent='Nama pengguna 3-20 huruf kecil, angka, atau _.';return}
-      if(p.length<6){e.textContent='Kata sandi minimal 6 karakter.';return}
-      const email=u+'@lumiere.app';
-      let r=await SB.auth.signInWithPassword({email,password:p});
-      if(r.error){r=await SB.auth.signUp({email,password:p});if(r.error||!r.data.session){e.textContent='Kata sandi salah, atau akun sudah ada.';return}}
-      UID=r.data.user.id;ME.user=u;
-      const {data:pr}=await SB.from('profiles').select('*').eq('id',UID).maybeSingle();
-      if(pr){ME.name=pr.name;ME.bio=pr.bio||'';ME.city=pr.city||''}
-      else{ME.name=u[0].toUpperCase()+u.slice(1);await SB.from('profiles').upsert({id:UID,username:u,name:ME.name,bio:ME.bio,city:ME.city})}
-      e.textContent='';$('#lp').value='';$('#login').hidden=true;syncMe();await loadAll();await loadStories();go(0)
-    };
-    logout=async function(){if(SB)await SB.auth.signOut();UID=null;_logout()};
-    like=function(k){_like(k);const p=posts[k];if(SB&&p.id)(p.liked?SB.from('likes').insert({post_id:p.id,user_id:UID}):SB.from('likes').delete().match({post_id:p.id,user_id:UID})).then(()=>{})};
-    post=function(){const v=$('#np').value.trim();_post();if(SB&&v)SB.from('posts').insert({user_id:UID,content:v}).select('id').single().then(r=>{if(r.data)posts[0].id=r.data.id})};
-    cmt=function(k,el){const v=el.value.trim();_cmt(k,el);const p=posts[k];if(SB&&v&&p.id)SB.from('comments').insert({post_id:p.id,user_id:UID,content:v}).then(()=>{})};
-    saveProfile=function(){_save();if(SB)SB.from('profiles').upsert({id:UID,username:ME.user,name:ME.name,bio:ME.bio,city:ME.city}).then(()=>{})};
-    async function loadAll(){
-      const {data,error}=await SB.from('posts').select('id,content,created_at,user_id,profiles(name),likes(user_id),comments(content,profiles(name))').order('created_at',{ascending:false}).limit(30);
-      if(error||!data)return;
-      posts=data.map(r=>{const n=r.profiles?.name||'?';return{id:r.id,me:r.user_id===UID,n,i:n[0],g:0,t:new Date(r.created_at).toLocaleString('id-ID'),x:r.content,p:null,c:'',l:r.likes.length,liked:r.likes.some(z=>z.user_id===UID)?1:0,cm:r.comments.map(c=>[c.profiles?.name||'?',c.content])}});render()
-    }
-    async function loadStories(){
-      const {data}=await SB.from('stories').select('url,is_video,profiles(name)').gte('created_at',new Date(Date.now()-864e5).toISOString()).order('created_at',{ascending:false});
-      if(data&&data.length){stories=data.map(x=>({n:x.profiles?.name||'?',g:0,url:x.url,vid:x.is_video}));renderStories()}
-    }
-    addStory=async function(inp){
-      const f=inp.files[0];if(!SB||!f)return _add(inp);
-      const path=UID+'/'+Date.now()+'-'+f.name.replace(/[^\w.]/g,'_');
-      const up=await SB.storage.from('stories').upload(path,f);if(up.error){alert('Upload gagal: '+up.error.message);return}
-      const url=SB.storage.from('stories').getPublicUrl(path).data.publicUrl;
-      await SB.from('stories').insert({user_id:UID,url,is_video:f.type.startsWith('video')});
-      inp.value='';await loadStories();openStory(0)
-    };
   </script>
 </body>
 </html>
