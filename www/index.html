@@ -74,6 +74,8 @@
     .reel{position:relative;aspect-ratio:9/14;border-radius:22px;overflow:hidden;border:1px solid var(--line);color:#fff}
     .reel .info{position:absolute;left:16px;bottom:18px;right:70px;z-index:2;display:grid;gap:4px}
     .reel .side{position:absolute;right:12px;bottom:18px;z-index:2;display:grid;gap:8px;justify-items:center;font-size:12px}
+    .reel-tools{display:flex;gap:8px;align-items:center;justify-content:space-between;margin:12px 0}
+    .upload-ghost{background:rgba(255,255,255,.06);border:1px solid var(--line);padding:8px 12px;border-radius:999px;color:var(--text);cursor:pointer}
     @media(prefers-reduced-motion:no-preference){.reel .media{background-size:300% 300%;animation:drift 9s ease-in-out infinite}@keyframes drift{50%{background-position:100% 100%}}}
   </style>
 </head>
@@ -103,6 +105,7 @@
     </div>
 
     <input type="file" id="sf" accept="image/*,video/*" hidden onchange="addStory(this)">
+    <input type="file" id="reelUpload" accept="video/*" hidden onchange="uploadReel(this)">
 
     <header>
       <div class="logo">Lumière</div>
@@ -142,7 +145,14 @@
         </div>
         <div id="mine"></div>
       </section>
-      <section class="view" id="v5"><h2>Reels</h2><div class="reel" id="reel"></div></section>
+      <section class="view" id="v5">
+        <h2>Reels</h2>
+        <div class="reel-tools">
+          <button class="upload-ghost" onclick="document.getElementById('reelUpload').click()">Upload reel</button>
+          <button class="btn" onclick="nextReel()">Selanjutnya</button>
+        </div>
+        <div class="reel" id="reel"></div>
+      </section>
     </div>
 
     <nav>
@@ -366,69 +376,6 @@
       $('#saved').textContent = 'Profil tersimpan.';
     }
 
-    function submitAuth() {
-      const u = $('#lu').value.trim().toLowerCase();
-      const password = $('#lp').value.trim();
-      const full = $('#lfull').value.trim();
-      const e = $('#lerr');
-
-      if (!u || u.length < 3) { e.textContent = 'Nama pengguna minimal 3 karakter.'; return; }
-      if (password.length < 4) { e.textContent = 'Kata sandi minimal 4 karakter.'; return; }
-      if (APP.authMode === 'register' && !full) { e.textContent = 'Nama lengkap wajib diisi.'; return; }
-
-      APP.currentUser.username = u;
-      APP.currentUser.name = APP.authMode === 'register' ? full : (APP.currentUser.name === 'Anda' ? u[0].toUpperCase() + u.slice(1) : APP.currentUser.name);
-      APP.currentUser.bio = APP.currentUser.bio || 'Pencinta senja, kopi hitam, dan buku-buku tua.';
-      APP.currentUser.city = APP.currentUser.city || 'Jakarta';
-
-      if (APP.authMode === 'register') {
-        const exists = APP.posts.some(p => p.user === u) || APP.stories.some(s => s.user === u);
-        if (!exists) {
-          APP.posts.unshift({
-            id: `welcome-${Date.now()}`,
-            user: u,
-            name: full,
-            initials: full.slice(0, 1).toUpperCase(),
-            theme: 0,
-            createdAt: 'Baru saja',
-            text: 'Selamat datang di Lumière! Saya baru saja bergabung.',
-            image: 0,
-            caption: 'Halo dunia',
-            likes: 0,
-            liked: false,
-            comments: [],
-            fresh: true
-          });
-        }
-      }
-
-      persistDemoState();
-      e.textContent = '';
-      $('#lp').value = '';
-      $('#lfull').value = '';
-      $('#login').hidden = true;
-      renderFeed();
-      renderStories();
-      go(0);
-    }
-
-    function login() {
-      submitAuth();
-    }
-
-    function logout() {
-      APP.currentUser = { username: '', name: 'Anda', bio: 'Pencinta senja, kopi hitam, dan buku-buku tua.', city: 'Jakarta' };
-      persistDemoState();
-      $('#login').hidden = false;
-      toggleAuthMode('login');
-      $('#lu').value = '';
-      $('#lp').value = '';
-      $('#lfull').value = '';
-      syncMe();
-      renderFeed();
-      renderStories();
-    }
-
     function runBar(el, sec, done) {
       clearInterval(TM);
       let t = 0;
@@ -471,9 +418,45 @@
       document.getElementById('sv').hidden = true;
     }
 
+    async function uploadToSupabase(file, bucket, folder) {
+      const L = window.LUMIERE || {};
+      const SB = (L.SUPABASE_URL && window.supabase) ? supabase.createClient(L.SUPABASE_URL, L.SUPABASE_ANON_KEY) : null;
+      if (!SB || !file) return null;
+      const safe = file.name.replace(/[^a-zA-Z0-9_.-]/g, '_');
+      const path = `${folder}/${Date.now()}-${safe}`;
+      const { error } = await SB.storage.from(bucket).upload(path, file);
+      if (error) {
+        alert('Upload gagal: ' + error.message);
+        return null;
+      }
+      const { data } = SB.storage.from(bucket).getPublicUrl(path);
+      return data.publicUrl;
+    }
+
     function addStory(inp) {
       const file = inp.files[0];
       if (!file) return;
+      if (SB) {
+        uploadToSupabase(file, 'stories', APP.currentUser.username || 'stories').then(url => {
+          if (!url) return;
+          APP.stories.unshift({
+            id: `story-${Date.now()}`,
+            user: APP.currentUser.username || 'anda',
+            name: APP.currentUser.name || 'Anda',
+            initials: (APP.currentUser.name || 'Anda').slice(0, 1).toUpperCase(),
+            theme: 0,
+            text: 'Cerita baru',
+            url,
+            vid: file.type.startsWith('video'),
+            seen: false
+          });
+          inp.value = '';
+          persistDemoState();
+          renderStories();
+          openStory(0);
+        });
+        return;
+      }
       const item = {
         id: `story-${Date.now()}`,
         user: APP.currentUser.username || 'anda',
@@ -516,6 +499,33 @@
       r.liked = !r.liked;
       r.likes += r.liked ? 1 : -1;
       document.getElementById('rs').innerHTML = side();
+    }
+
+    async function uploadReel(inp) {
+      const file = inp.files[0];
+      if (!file) return;
+      const url = await uploadToSupabase(file, 'reels', APP.currentUser.username || 'reels');
+      if (!url) return;
+      const reel = {
+        user: APP.currentUser.name || APP.currentUser.username || 'Anda',
+        title: file.name.replace(/\.[^/.]+$/, '') || 'Reel baru',
+        likes: 0,
+        videoUrl: url,
+        liked: false
+      };
+      reels.unshift(reel);
+      inp.value = '';
+      ri = 0;
+      showReel();
+      if (SB && APP.currentUser.username) {
+        const row = {
+          user_id: UID,
+          title: reel.title,
+          video_url: url,
+          thumbnail_url: url
+        };
+        await SB.from('reels').insert(row);
+      }
     }
 
     document.querySelectorAll('nav button').forEach(b => b.dataset.v = b.getAttribute('onclick').match(/\d/)[0]);
