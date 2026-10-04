@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Lumière</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+  <script src="config.js"></script>
+  <style>
+    :root{--bg:#171021;--panel:rgba(255,246,240,.07);--line:rgba(232,196,160,.22);--text:#f4ece6;--mute:#b9a9b8;--gold:#e0b48a;--rose:#d98b9b;--glass:rgba(23,16,33,.72);box-sizing:border-box}
+    @media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#e9dfd8}}
+    :root[data-theme="dark"]{--bg:#171021}
+    *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+    html,body{height:100%}
+    body{background:var(--bg);font-family:'Jost',system-ui,sans-serif;color:var(--text);display:flex;align-items:center;justify-content:center;overflow:hidden}
+    .phone{aspect-ratio:9/16;height:min(100%,calc(100vw*16/9));max-width:100%;position:relative;overflow:hidden;display:flex;flex-direction:column;border-radius:clamp(0px,2vw,34px);
+    background:radial-gradient(70% 40% at 15% 0%,#6b3a5e 0%,transparent 70%),radial-gradient(60% 40% at 100% 35%,#3b3a7a 0%,transparent 70%),radial-gradient(70% 40% at 0% 80%,#7a4a3c 0%,transparent 70%),#171021;box-shadow:0 0 0 1px var(--line),0 30px 80px rgba(0,0,0,.5)}
+    .phone::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.14;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E")}
+    header{padding:calc(14px + env(safe-area-inset-top,0px)) 20px 10px;display:flex;justify-content:space-between;align-items:center;z-index:2}
+    .logo{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:600;letter-spacing:.02em;color:var(--gold)}
+    .hbtn{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--panel);color:var(--text);display:grid;place-items:center;cursor:pointer;margin-left:8px;font-size:16px}
+    .scroll{flex:1;overflow-y:auto;padding:0 16px 96px;scrollbar-width:none}.scroll::-webkit-scrollbar{display:none}
+    .stories{display:flex;gap:14px;overflow-x:auto;padding:6px 0 16px;scrollbar-width:none}
+    .st{flex:none;width:62px;text-align:center;font-size:11px;color:var(--mute);cursor:pointer}
+    .ring{width:62px;height:62px;border-radius:50%;padding:2px;background:conic-gradient(var(--gold),var(--rose),var(--gold));margin-bottom:5px}
+    .ring.seen{background:var(--line)}
+    .av{width:100%;height:100%;border-radius:50%;border:2px solid var(--bg);display:grid;place-items:center;font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:#171021}
+    .card{background:var(--panel);border:1px solid var(--line);border-radius:22px;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);margin-bottom:14px;overflow:hidden}
+    .compose{padding:14px;display:flex;gap:10px;align-items:center}
+    .compose input{flex:1;background:transparent;border:0;border-bottom:1px solid var(--line);color:var(--text);font:400 15px 'Jost',sans-serif;padding:8px 2px;outline:none}
+    .compose input::placeholder{color:var(--mute)}
+    .btn{background:linear-gradient(135deg,#f0cfa6,#d39a79);color:#2a1a24;border:0;border-radius:999px;padding:9px 18px;font:500 13px 'Jost',sans-serif;cursor:pointer}
+    .ph{display:flex;gap:10px;align-items:center;padding:14px 14px 10px}
+    .ph .av{width:42px;height:42px;flex:none;border:0}
+    .ph b{display:block;font-weight:500;font-size:15px}.ph small{color:var(--mute);font-size:12px}
+    .txt{padding:0 16px 12px;font-size:15px;line-height:1.5;font-weight:300}
+    .pic{height:260px;margin:0 10px;border-radius:16px;position:relative;overflow:hidden}
+    .pic span{position:absolute;left:16px;bottom:12px;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:24px;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.4)}
+    .stats{display:flex;justify-content:space-between;padding:10px 16px 0;font-size:12px;color:var(--mute)}
+    .acts{display:flex;border-top:1px solid var(--line);margin-top:10px}
+    .acts button{flex:1;background:none;border:0;color:var(--text);font:400 13px 'Jost',sans-serif;padding:13px 0;cursor:pointer}
+    .acts button.on{color:var(--rose)}
+    .cm{padding:0 16px 12px;font-size:13px;color:var(--mute);line-height:1.6}.cm b{color:var(--gold);font-weight:500}
+    .cin{display:flex;gap:8px;padding:0 14px 14px}
+    .cin input{flex:1;background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:999px;padding:9px 14px;color:var(--text);font:300 13px 'Jost',sans-serif;outline:none}
+    nav{position:absolute;left:16px;right:16px;bottom:calc(14px + env(safe-area-inset-bottom,0px));background:var(--glass);border:1px solid var(--line);border-radius:999px;display:flex;justify-content:space-around;padding:8px;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);z-index:3}
+    nav button{background:none;border:0;color:var(--mute);width:46px;height:42px;border-radius:50%;cursor:pointer;display:grid;place-items:center}
+    nav button.on{color:#2a1a24;background:linear-gradient(135deg,#f0cfa6,#d39a79)}
+    nav svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+    .empty{text-align:center;color:var(--mute);padding:60px 20px;font-family:'Cormorant Garamond',serif;font-size:22px;font-style:italic}
+    .view{display:none}.view.on{display:block}
+    .row{display:flex;gap:12px;align-items:center;padding:12px 14px;border-bottom:1px solid var(--line)}.row:last-child{border:0}
+    .row .av{width:44px;height:44px;flex:none;border:0}.row div b{display:block;font-weight:500;font-size:14px}.row div small{color:var(--mute);font-size:12px}.row .btn{margin-left:auto;padding:7px 14px}
+    h2{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:26px;margin:4px 2px 12px;color:var(--gold)}
+    @media(prefers-reduced-motion:no-preference){.card.new{animation:in .5s ease}@keyframes in{from{opacity:0;transform:translateY(12px)}}}
+
+    :root[data-theme="light"]{--bg:#efe4dc;--panel:rgba(255,255,255,.62);--line:rgba(120,80,70,.2);--text:#2a1a24;--mute:#7a6573;--gold:#a8683f;--rose:#c0506a;--glass:rgba(255,248,244,.85)}
+    :root[data-theme="light"] .phone,:root[data-theme="light"] .ov{background:radial-gradient(70% 40% at 15% 0%,#f6c9d4,transparent 70%),radial-gradient(60% 40% at 100% 40%,#cfd0f5,transparent 70%),radial-gradient(70% 40% at 0% 85%,#f7d9bf,transparent 70%),#fbf3ee}
+    .ov{position:absolute;inset:0;z-index:20;display:flex;flex-direction:column;justify-content:center;padding:32px;background:radial-gradient(80% 50% at 20% 0%,#6b3a5e,transparent 70%),radial-gradient(70% 50% at 100% 100%,#3b3a7a,transparent 70%),#171021}
+    .ov[hidden]{display:none}
+    .fld{width:100%;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:13px 16px;color:var(--text);font:300 15px 'Jost',sans-serif;outline:none;margin-bottom:12px}
+    .err{color:var(--rose);font-size:13px;min-height:18px;margin:2px 0 8px}
+    .big{width:100%;padding:13px;font-size:15px}
+    .ov.sv{background:#000;padding:0}
+    .media{position:absolute;inset:0;display:grid;place-items:center;color:#fff;text-align:center;padding:30px;font:italic 600 32px 'Cormorant Garamond',serif}
+    .media img,.media video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+    .bars,.rb{position:absolute;top:calc(10px + env(safe-area-inset-top,0px));left:12px;right:12px;height:3px;background:rgba(255,255,255,.3);border-radius:3px;z-index:2}
+    .rb{top:12px}.bar{height:100%;width:0;background:#fff;border-radius:3px}
+    .sv .top{position:absolute;top:calc(22px + env(safe-area-inset-top,0px));left:14px;right:14px;display:flex;justify-content:space-between;color:#fff;z-index:2}
+    .sv .top button{background:none;border:0;color:#fff;font-size:28px;cursor:pointer}
+    .reel{position:relative;aspect-ratio:9/14;border-radius:22px;overflow:hidden;border:1px solid var(--line);color:#fff}
+    .reel .info{position:absolute;left:16px;bottom:18px;right:70px;z-index:2;display:grid;gap:4px}
+    .reel .side{position:absolute;right:12px;bottom:18px;z-index:2;display:grid;gap:8px;justify-items:center;font-size:12px}
+    @media(prefers-reduced-motion:no-preference){.reel .media{background-size:300% 300%;animation:drift 9s ease-in-out infinite}@keyframes drift{50%{background-position:100% 100%}}}
+  </style>
+</head>
+<body>
+  <div class="phone">
+    <div class="ov" id="login">
+      <div class="logo" style="font-size:46px;text-align:center">Lumière</div>
+      <p style="text-align:center;color:var(--mute);margin:6px 0 28px;font-weight:300">Masuk untuk melihat kabar terbaru.</p>
+      <input class="fld" id="lu" placeholder="Nama pengguna" autocomplete="username">
+      <input class="fld" id="lp" type="password" placeholder="Kata sandi" autocomplete="current-password" onkeydown="if(event.key==='Enter')login()">
+      <div class="err" id="lerr"></div>
+      <button class="btn big" onclick="login()">Masuk</button>
+      <p style="text-align:center;color:var(--mute);font-size:12px;margin-top:18px">Versi belajar: akun tidak dikirim ke server.</p>
+    </div>
+
+    <div class="ov sv" id="sv" hidden>
+      <div class="media" id="sm"></div>
+      <div class="bars"><div class="bar" id="sb"></div></div>
+      <div class="top"><b id="sn"></b><button aria-label="Tutup" onclick="closeStory()">×</button></div>
+    </div>
+
+    <input type="file" id="sf" accept="image/*,video/*" hidden onchange="addStory(this)">
+
+    <header>
+      <div class="logo">Lumière</div>
+      <div>
+        <button class="hbtn" aria-label="Ganti tema" onclick="toggleTheme()">◐</button>
+        <button class="hbtn" aria-label="Pesan" onclick="go(3)">✉</button>
+      </div>
+    </header>
+
+    <div class="scroll">
+      <section class="view on" id="v0">
+        <div class="stories" id="stories"></div>
+        <div class="card compose">
+          <div class="av" style="width:40px;height:40px;background:linear-gradient(135deg,#f0cfa6,#d98b9b)">A</div>
+          <input id="np" placeholder="Apa yang Anda pikirkan?" aria-label="Tulis kiriman">
+          <button class="btn" onclick="post()">Kirim</button>
+        </div>
+        <div id="feed"></div>
+      </section>
+
+      <section class="view" id="v1"><h2>Teman</h2><div class="card" id="friends"></div></section>
+      <section class="view" id="v2"><h2>Notifikasi</h2><div class="card" id="notifs"></div></section>
+      <section class="view" id="v3"><h2>Pesan</h2><div class="card" id="msgs"></div></section>
+      <section class="view" id="v4">
+        <h2>Profil</h2>
+        <div class="card" style="padding:16px">
+          <div class="ph" style="padding:0 0 14px">
+            <div class="av" id="pav" style="background:linear-gradient(135deg,#f0cfa6,#d98b9b)"></div>
+            <div><b id="pn"></b><small id="pu"></small></div>
+          </div>
+          <input class="fld" id="ename" placeholder="Nama tampilan" maxlength="30">
+          <input class="fld" id="ebio" placeholder="Bio singkat" maxlength="90">
+          <input class="fld" id="ecity" placeholder="Kota" maxlength="30">
+          <button class="btn" onclick="saveProfile()">Simpan profil</button>
+          <button class="btn" style="background:var(--panel);color:var(--text);border:1px solid var(--line)" onclick="logout()">Keluar</button>
+          <div class="err" id="saved"></div>
+        </div>
+        <details class="card" style="padding:14px 16px;font-size:13px;line-height:1.6;color:var(--mute)">
+          <summary style="color:var(--gold);cursor:pointer">Panduan belajar developer pemula</summary>
+          <ol style="padding-left:18px;margin-top:8px">
+            <li>Buka bagian CONFIG di kode, ubah durasi story dan reels.</li>
+            <li>HTML = kerangka halaman, CSS = tampilan, JS = logika.</li>
+            <li>Data (posts, stories, reels) adalah array; render() menggambar ulang layar.</li>
+            <li>Langkah berikut: simpan data ke database (Firebase/Supabase) dan login sungguhan.</li>
+            <li>Untuk Play Store/App Store, bungkus dengan Capacitor atau pelajari Flutter/React Native.</li>
+          </ol>
+        </details>
+        <div id="mine"></div>
+      </section>
+      <section class="view" id="v5"><h2>Reels</h2><div class="reel" id="reel"></div></section>
+    </div>
+
+    <nav>
+      <button class="on" aria-label="Beranda" onclick="go(0)"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v10H3z"/></svg></button>
+      <button aria-label="Teman" onclick="go(1)"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2 20c0-4 3-6 7-6s7 2 7 6M16 5a3.5 3.5 0 010 7M18 14c3 .5 4 3 4 6"/></svg></button>
+      <button aria-label="Reels" onclick="go(5)"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M10 8l6 4-6 4z"/></svg></button>
+      <button aria-label="Notifikasi" onclick="go(2)"><svg viewBox="0 0 24 24"><path d="M6 17V11a6 6 0 0112 0v6l2 2H4zM10 21h4"/></svg></button>
+      <button aria-label="Pesan" onclick="go(3)"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></svg></button>
+      <button aria-label="Profil" onclick="go(4)"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-5 4-7 8-7s8 2 8 7"/></svg></button>
+    </nav>
+  </div>
+
+  <script>
+    /* ===== CONFIG: developer boleh ubah angka di sini ===== */
+    const CFG={STORY_SEC:5,STORY_MAX_VIDEO_SEC:15,REEL_SEC:6};
+    let ME={user:'',name:'Anda',bio:'Pencinta senja, kopi hitam, dan buku-buku tua.',city:'Jakarta'};
+    const G=['linear-gradient(135deg,#f0cfa6,#d98b9b)','linear-gradient(135deg,#a9b7f0,#d98bd0)','linear-gradient(135deg,#f0a98b,#e0b48a)','linear-gradient(135deg,#9fd6c4,#7a9be0)'];
+    const pics=['linear-gradient(160deg,#2b1b4d 0%,#a8507a 55%,#f2b980 100%)','linear-gradient(160deg,#10243e 0%,#4a6fa5 50%,#e8c9a0 100%)','linear-gradient(160deg,#3a1c2e 0%,#c46a6a 55%,#f5d5a8 100%)'];
+    const people=[['Raina','R',0],['Dimas','D',1],['Salsa','S',2],['Arka','A',3],['Mira','M',0]];
+    let posts=[
+      {n:'Raina',i:'R',g:0,t:'2 jam lalu',x:'Senja di Labuan Bajo selalu terasa seperti lukisan yang belum kering.',p:0,c:'Golden hour',l:128,liked:0,cm:[['Dimas','Indah sekali!']]},
+      {n:'Dimas',i:'D',g:1,t:'5 jam lalu',x:'Pagi yang tenang, secangkir kopi, dan satu bab buku baru.',p:1,c:'Pagi hening',l:86,liked:0,cm:[]},
+      {n:'Salsa',i:'S',g:2,t:'Kemarin',x:'Pameran seni kemarin membuat saya ingin kembali melukis.',p:2,c:'Atelier',l:211,liked:0,cm:[['Mira','Ayo lukis bareng!'],['Arka','Keren.']]}
+    ];
+    const $=s=>document.querySelector(s),esc=s=>s.replace(/[&<>\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+    function card(p,k){return `<div class="card ${p.fresh?'new':''}"><div class="ph"><div class="av" style="background:${G[p.g]}">${p.me?esc(ME.name[0]):p.i}</div><div><b>${esc(p.me?ME.name:p.n)}</b><small>${p.t}</small></div></div><div class="txt">${esc(p.x)}</div>${p.p!=null?`<div class="pic" style="background:${pics[p.p]}"><span>${p.c}</span></div>`:''}<div class="stats"><span>♥ ${p.l}</span><span>${p.cm.length} komentar</span></div><div class="acts"><button class="${p.liked?'on':''}" onclick="like(${k})">${p.liked?'♥ Disukai':'♡ Suka'}</button><button onclick="document.getElementById('c${k}').focus()">Komentar</button><button onclick="this.textContent='Tersalin';setTimeout(()=>this.textContent='Bagikan',1400)">Bagikan</button></div><div class="cm" style="padding-top:10px">${p.cm.map(c=>`<div><b>${esc(c[0])}</b> ${esc(c[1])}</div>`).join('')}</div><div class="cin"><input id="c${k}" placeholder="Tulis komentar…" onkeydown="if(event.key==='Enter')cmt(${k},this)"></div></div>`}
+    function render(){
+      $('#feed').innerHTML=posts.length?posts.map(card).join(''):'<div class="empty">Belum ada kiriman. Tulis yang pertama.</div>';
+      posts.forEach(p=>p.fresh=0);
+      $('#mine').innerHTML=posts.map((p,k)=>p.me?card(p,k):'').join('')||'<div class="empty">Kiriman Anda akan muncul di sini.</div>';
+    }
+    function like(k){const p=posts[k];p.liked=!p.liked;p.l+=p.liked?1:-1;render()}
+    function cmt(k,el){const v=el.value.trim();if(!v)return;posts[k].cm.push([ME.name,v]);render()}
+    function post(){const v=$('#np').value.trim();if(!v){$('#np').focus();return}posts.unshift({me:1,n:'Anda',i:'A',g:0,t:'Baru saja',x:v,p:Math.random()<.6?Math.floor(Math.random()*3):null,c:'Momen baru',l:0,liked:0,cm:[],fresh:1});$('#np').value='';render()}
+    const row=(p,a,b,btn)=>`<div class="row"><div class="av" style="background:${G[p[2]]}">${p[1]}</div><div><b>${a}</b><small>${b}</small></div>${btn?`<button class="btn" onclick="this.textContent='Terkirim'">${btn}</button>`:''}</div>`;
+    $('#friends').innerHTML=people.map(p=>row(p,p[0],(3+p[2]*4)+' teman bersama','Tambah')).join('');
+    $('#notifs').innerHTML=people.slice(0,4).map((p,k)=>row(p,p[0],['menyukai kiriman Anda','mengomentari foto Anda','mengirim permintaan pertemanan','menyebut Anda'][k])).join('');
+    $('#msgs').innerHTML=people.map((p,k)=>row(p,p[0],['Sampai ketemu besok ya','Fotonya cantik sekali','Terima kasih banyak','Jadi kita berangkat?','Kabari saya ya'][k])).join('');
+    render();
+
+    /* ===== Tema terang/gelap ===== */
+    function setTheme(t){document.documentElement.dataset.theme=t}
+    function toggleTheme(){setTheme(document.documentElement.dataset.theme==='light'?'dark':'light')}
+    setTheme(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark');
+
+    /* ===== Login (demo, tanpa server) ===== */
+    function login(){const u=$('#lu').value.trim(),p=$('#lp').value,e=$('#lerr');
+      if(u.length<3){e.textContent='Nama pengguna minimal 3 karakter.';return}
+      if(p.length<4){e.textContent='Kata sandi minimal 4 karakter.';return}
+      ME.user=u;if(ME.name==='Anda')ME.name=u[0].toUpperCase()+u.slice(1);
+      e.textContent='';$('#lp').value='';$('#login').hidden=true;syncMe();render();go(0)
+    }
+    function logout(){$('#login').hidden=false}
+
+    /* ===== Profil yang bisa diedit ===== */
+    function syncMe(){$('#pav').textContent=$('.compose .av').textContent=ME.name[0].toUpperCase();$('#pn').textContent=ME.name;$('#pu').textContent='@'+(ME.user||'anda')+' · '+ME.city;
+      $('#ename').value=ME.name;$('#ebio').value=ME.bio;$('#ecity').value=ME.city;renderStories()}
+    function saveProfile(){ME.name=$('#ename').value.trim()||ME.name;ME.bio=$('#ebio').value.trim();ME.city=$('#ecity').value.trim()||ME.city;syncMe();render();$('#saved').textContent='Profil tersimpan.'}
+
+    /* ===== Timer bar bersama (story & reels) ===== */
+    let TM;const sb=document.getElementById('sb');
+    function runBar(el,sec,done){clearInterval(TM);let t=0;el.style.width='0';TM=setInterval(()=>{t+=.1;el.style.width=Math.min(100,t/sec*100)+'%';if(t>=sec){clearInterval(TM);done()}},100)}
+
+    /* ===== Story: foto, video, atau teks ===== */
+    let stories=[{n:'Raina',g:0,txt:'Senja hari ini'},{n:'Dimas',g:1,txt:'Kopi pagi'},{n:'Salsa',g:2,txt:'Pameran seni'}];
+    function renderStories(){$('#stories').innerHTML=`<div class="st" onclick="document.getElementById('sf').click()"><div class="ring"><div class="av" style="background:var(--panel);color:var(--gold);font-size:28px">+</div></div>Buat cerita</div>`+stories.map((x,k)=>`<div class="st" onclick="openStory(${k})"><div class="ring ${x.seen?'seen':''}"><div class="av" style="background:${G[x.g||0]}">${esc(x.n[0])}</div></div>${esc(x.n)}</div>`).join('')}
+    function addStory(inp){const f=inp.files[0];if(!f)return;stories.unshift({n:ME.name,g:0,url:URL.createObjectURL(f),vid:f.type.startsWith('video')});inp.value='';openStory(0)}
+    function openStory(k){const x=stories[k],m=document.getElementById('sm');x.seen=1;renderStories();document.getElementById('sv').hidden=false;document.getElementById('sn').textContent=x.n;
+      const next=()=>k+1<stories.length?openStory(k+1):closeStory();
+      if(x.url&&x.vid){m.style.background='#000';m.innerHTML=`<video src="${x.url}" autoplay muted playsinline></video>`;m.firstChild.onloadedmetadata=e=>runBar(sb,Math.min(e.target.duration||CFG.STORY_SEC,CFG.STORY_MAX_VIDEO_SEC),next)}
+      else{m.style.background=x.url?'#000':pics[(x.g||0)%3];m.innerHTML=x.url?`<img src="${x.url}" alt="Story">`:`<span>${esc(x.txt)}</span>`;runBar(sb,CFG.STORY_SEC,next)}
+    }
+    function closeStory(){clearInterval(TM);document.getElementById('sv').hidden=true}
+
+    /* ===== Reels: video pendek, durasi dari CFG.REEL_SEC ===== */
+    const reels=[{u:'Raina',t:'Ombak dan senja di Pulau Padar',l:1240},{u:'Dimas',t:'Latte art dalam 15 detik',l:870},{u:'Salsa',t:'Melukis langit dengan cat air',l:2310},{u:'Arka',t:'Rute sepeda pagi di Kota Tua',l:540}];let ri=0;
+    const side=()=>{const r=reels[ri];return `<button class="hbtn" aria-label="Suka" onclick="likeReel()">${r.liked?'♥':'♡'}</button><span>${r.l}</span><button class="hbtn" aria-label="Berikutnya" onclick="nextReel()">⏭</button>`};
+    function showReel(){const r=reels[ri];$('#reel').innerHTML=`<div class="media" style="background:${pics[ri%3]}"><span>${esc(r.t)}</span></div><div class="rb"><div class="bar" id="rbar"></div></div><div class="info"><b>@${esc(r.u)}</b><small>${ri+1}/${reels.length} · ${CFG.REEL_SEC} dtk</small></div><div class="side" id="rs">${side()}</div>`;runBar(document.getElementById('rbar'),CFG.REEL_SEC,nextReel)}
+    function nextReel(){ri=(ri+1)%reels.length;showReel()}
+    function likeReel(){const r=reels[ri];r.liked=!r.liked;r.l+=r.liked?1:-1;document.getElementById('rs').innerHTML=side()}
+
+    /* ===== Navigasi ===== */
+    document.querySelectorAll('nav button').forEach(b=>b.dataset.v=b.getAttribute('onclick').match(/\d/)[0]);
+    function go(n){document.querySelectorAll('.view').forEach(v=>v.classList.toggle('on',v.id==='v'+n));document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.v==n));document.querySelector('.scroll').scrollTop=0;if(n===5)showReel();else clearInterval(TM)}
+    syncMe();
+
+    /* ===== SUPABASE: aktif jika config.js terisi; kosong = mode demo (data lokal) ===== */
+    const L=window.LUMIERE||{};
+    const SB=(L.SUPABASE_URL&&window.supabase)?supabase.createClient(L.SUPABASE_URL,L.SUPABASE_ANON_KEY):null;
+    let UID=null;
+    if(SB)document.querySelector('#login p:last-child').textContent='Akun baru dibuat otomatis saat pertama kali masuk.';
+    const _login=login,_logout=logout,_like=like,_cmt=cmt,_post=post,_save=saveProfile,_add=addStory;
+
+    /* Supabase Auth butuh email, jadi username diubah jadi username@lumiere.app (matikan "Confirm email") */
+    login=async function(){
+      if(!SB)return _login();
+      const u=$('#lu').value.trim().toLowerCase(),p=$('#lp').value,e=$('#lerr');
+      if(!/^[a-z0-9_]{3,20}$/.test(u)){e.textContent='Nama pengguna 3-20 huruf kecil, angka, atau _.';return}
+      if(p.length<6){e.textContent='Kata sandi minimal 6 karakter.';return}
+      const email=u+'@lumiere.app';
+      let r=await SB.auth.signInWithPassword({email,password:p});
+      if(r.error){r=await SB.auth.signUp({email,password:p});if(r.error||!r.data.session){e.textContent='Kata sandi salah, atau akun sudah ada.';return}}
+      UID=r.data.user.id;ME.user=u;
+      const {data:pr}=await SB.from('profiles').select('*').eq('id',UID).maybeSingle();
+      if(pr){ME.name=pr.name;ME.bio=pr.bio||'';ME.city=pr.city||''}
+      else{ME.name=u[0].toUpperCase()+u.slice(1);await SB.from('profiles').upsert({id:UID,username:u,name:ME.name,bio:ME.bio,city:ME.city})}
+      e.textContent='';$('#lp').value='';$('#login').hidden=true;syncMe();await loadAll();await loadStories();go(0)
+    };
+    logout=async function(){if(SB)await SB.auth.signOut();UID=null;_logout()};
+    like=function(k){_like(k);const p=posts[k];if(SB&&p.id)(p.liked?SB.from('likes').insert({post_id:p.id,user_id:UID}):SB.from('likes').delete().match({post_id:p.id,user_id:UID})).then(()=>{})};
+    post=function(){const v=$('#np').value.trim();_post();if(SB&&v)SB.from('posts').insert({user_id:UID,content:v}).select('id').single().then(r=>{if(r.data)posts[0].id=r.data.id})};
+    cmt=function(k,el){const v=el.value.trim();_cmt(k,el);const p=posts[k];if(SB&&v&&p.id)SB.from('comments').insert({post_id:p.id,user_id:UID,content:v}).then(()=>{})};
+    saveProfile=function(){_save();if(SB)SB.from('profiles').upsert({id:UID,username:ME.user,name:ME.name,bio:ME.bio,city:ME.city}).then(()=>{})};
+    async function loadAll(){
+      const {data,error}=await SB.from('posts').select('id,content,created_at,user_id,profiles(name),likes(user_id),comments(content,profiles(name))').order('created_at',{ascending:false}).limit(30);
+      if(error||!data)return;
+      posts=data.map(r=>{const n=r.profiles?.name||'?';return{id:r.id,me:r.user_id===UID,n,i:n[0],g:0,t:new Date(r.created_at).toLocaleString('id-ID'),x:r.content,p:null,c:'',l:r.likes.length,liked:r.likes.some(z=>z.user_id===UID)?1:0,cm:r.comments.map(c=>[c.profiles?.name||'?',c.content])}});render()
+    }
+    async function loadStories(){
+      const {data}=await SB.from('stories').select('url,is_video,profiles(name)').gte('created_at',new Date(Date.now()-864e5).toISOString()).order('created_at',{ascending:false});
+      if(data&&data.length){stories=data.map(x=>({n:x.profiles?.name||'?',g:0,url:x.url,vid:x.is_video}));renderStories()}
+    }
+    addStory=async function(inp){
+      const f=inp.files[0];if(!SB||!f)return _add(inp);
+      const path=UID+'/'+Date.now()+'-'+f.name.replace(/[^\w.]/g,'_');
+      const up=await SB.storage.from('stories').upload(path,f);if(up.error){alert('Upload gagal: '+up.error.message);return}
+      const url=SB.storage.from('stories').getPublicUrl(path).data.publicUrl;
+      await SB.from('stories').insert({user_id:UID,url,is_video:f.type.startsWith('video')});
+      inp.value='';await loadStories();openStory(0)
+    };
+  </script>
+</body>
+</html>
